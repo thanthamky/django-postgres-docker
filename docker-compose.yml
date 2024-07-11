@@ -1,0 +1,35 @@
+version: '3.8'
+
+services:
+  web:
+    build: ./project
+    volumes:
+      - ./project:/app
+    env_file: ./.env
+    command: sh start.sh
+    ports:
+      - 8000:8000
+    depends_on:
+      - db
+    networks:
+      - django_networks
+
+  db:
+    image: ${DB_IMAGE}
+    volumes:
+      - postgres_data:/var/lib/postgresql/data/
+    environment:
+      - POSTGRES_USER=${DB_USER}
+      - POSTGRES_PASSWORD=${DB_PASSWORD}
+      - POSTGRES_DB=${DB_NAME}
+    networks:
+      - django_networks
+    ports:
+      - "5432:5432"
+
+volumes:
+  postgres_data:
+
+networks:
+  django_networks:
+    driver: bridge
